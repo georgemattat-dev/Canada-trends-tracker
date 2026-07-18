@@ -185,6 +185,26 @@ function showColumnError(container, message) {
 
 // Render dynamic content in dashboard columns
 function populateDashboard(data) {
+  // Check if data is empty or invalid
+  const hasData = data && (
+    (data.twitter && data.twitter.length > 0) || 
+    (data.google && data.google.length > 0) || 
+    (data.youtube && data.youtube.length > 0)
+  );
+
+  if (!hasData) {
+    console.warn('No trending data found in JSON');
+    showColumnError(twitterTrendsList, 'Trends data temporarily unavailable. Please run the scraper workflow on GitHub.');
+    showColumnError(googleTrendsList, 'Trends data temporarily unavailable. Please run the scraper workflow on GitHub.');
+    showColumnError(youtubeTrendsList, 'Trends data temporarily unavailable. Please run the scraper workflow on GitHub.');
+    
+    const tickerContainer = document.getElementById('trends-ticker-content');
+    if (tickerContainer) {
+      tickerContainer.innerHTML = '<span class="ticker-item">Waiting for scraper to run on GitHub...</span>';
+    }
+    return;
+  }
+
   // Update timestamp
   if (data.last_updated) {
     renderUpdatedTime(data.last_updated);
